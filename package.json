@@ -1,0 +1,20 @@
+{
+  "name": "johnsons-barbers",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Johnson's Barbers — booking website with admin backend (Next.js + Supabase)",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.1.6",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "@supabase/supabase-js": "^2.48.1",
+    "@supabase/ssr": "^0.5.2",
+    "resend": "^4.1.2"
+  }
+}
