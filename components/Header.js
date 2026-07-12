@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { HIDDEN_PAGES } from '@/lib/site-config';
 
 const NAV = [
   { href: '/', label: 'Home' },
@@ -10,7 +11,7 @@ const NAV = [
   { href: '/gallery', label: 'Gallery' },
   { href: '/faq', label: 'FAQ' },
   { href: '/kit', label: 'Owner Kit' },
-];
+].filter((n) => !HIDDEN_PAGES.includes(n.href.replace('/', '')));
 
 export default function Header() {
   const pathname = usePathname();

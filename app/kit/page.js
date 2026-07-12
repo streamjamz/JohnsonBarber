@@ -1,10 +1,13 @@
+import { redirect } from 'next/navigation';
 import Checklist from '@/components/Checklist';
 import PrintButton from '@/components/PrintButton';
 import { getFeatures, getChecklist } from '@/lib/content';
+import { isHidden } from '@/lib/site-config';
 
 export const revalidate = 0;
 
 export default async function KitPage() {
+  if (isHidden('kit')) redirect('/');
   const [features, checklist] = await Promise.all([getFeatures(), getChecklist()]);
 
   return (

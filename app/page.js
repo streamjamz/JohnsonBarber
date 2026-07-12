@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import BarberPhoto from '@/components/BarberPhoto';
+import { isHidden } from '@/lib/site-config';
 import {
   getStats, getContent, getHours, getBarbers, getGroupPerks, getGroupPackages,
 } from '@/lib/content';
@@ -46,7 +47,9 @@ export default async function HomePage() {
           <h2>{c.story_title}</h2>
           <p>{c.story_p1}</p>
           <p>{c.story_p2}</p>
-          <Link href="/gallery" className="link-btn" style={{ display: 'inline-block' }}>See our work →</Link>
+          {!isHidden('gallery') && (
+            <Link href="/gallery" className="link-btn" style={{ display: 'inline-block' }}>See our work →</Link>
+          )}
         </div>
         <div className="hours-card">
           <div className="hours-head">Hours</div>

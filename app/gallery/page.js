@@ -1,8 +1,11 @@
+import { redirect } from 'next/navigation';
 import { getGallery, getReviews, getContent } from '@/lib/content';
+import { isHidden } from '@/lib/site-config';
 
 export const revalidate = 0;
 
 export default async function GalleryPage() {
+  if (isHidden('gallery')) redirect('/');
   const [gallery, reviews, content] = await Promise.all([getGallery(), getReviews(), getContent()]);
   const c = content;
   const insta = (c.shop_instagram || '@johnsonsbarbers').replace(/^@/, '');
