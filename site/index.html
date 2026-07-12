@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Johnson's Barbers — Sharp cuts. Straight talk.</title>
+  <meta name="description" content="Precision fades, classic scissor work, and hot-towel shaves. Book your barber online in 60 seconds at Johnson's Barbers.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+<div class="app-root" data-theme="dark">
+
+  <!-- ===== HEADER ===== -->
+  <header class="no-print site-header">
+    <div class="brand" data-nav="home">
+      <div class="brand-mark"><div class="stripe"></div><span>J</span></div>
+      <div style="line-height:1;">
+        <div class="brand-name">Johnson's</div>
+        <div class="brand-sub">Barbers</div>
+      </div>
+    </div>
+    <nav class="site-nav">
+      <button class="nav-link" data-nav="home">Home</button>
+      <button class="nav-link" data-nav="services">Services</button>
+      <button class="nav-link" data-nav="gallery">Gallery</button>
+      <button class="nav-link" data-nav="faq">FAQ</button>
+      <button class="nav-link" data-nav="kit">Owner Kit</button>
+      <button class="theme-toggle" id="themeToggle" title="Toggle light / dark">☀</button>
+      <button class="btn btn-red nav-book" data-nav="book">Book Now</button>
+    </nav>
+  </header>
+
+  <!-- ===================== HOME ===================== -->
+  <main class="page-view" data-page="home">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-bg"></div>
+      <div class="hero-topbar"></div>
+      <div class="hero-inner">
+        <div class="hero-pill">Est. 2011 · Walk-ins &amp; Appointments</div>
+        <h1>Sharp cuts.<br><span class="red">Straight talk.</span></h1>
+        <p>Precision fades, classic scissor work, and hot-towel shaves in the heart of the neighborhood. No fuss. Just a clean cut and a good chair to sit in.</p>
+        <div class="hero-cta">
+          <button class="btn btn-red" data-nav="book">Book an Appointment</button>
+          <button class="btn btn-outline" data-nav="services">See the Menu</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATS -->
+    <section class="stats" id="stats"></section>
+
+    <!-- STORY + HOURS -->
+    <section class="story">
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px;">The Shop</div>
+        <h2>A chair, a mirror, and 15 years of steady hands.</h2>
+        <p>Johnson's started as a single chair Mr. Johnson set up after 20 years cutting hair across the city. Today it's three barbers who take the craft seriously — and take their time. We learn your head, remember your cut, and get you back out the door looking sharp.</p>
+        <p>Every seat books online, every barber's got their own style, and there's always a fresh pot of coffee going.</p>
+        <button class="link-btn" data-nav="gallery">See our work →</button>
+      </div>
+      <div class="hours-card">
+        <div class="hours-head">Hours</div>
+        <div class="hours-body" id="hours">
+          <div class="hours-foot">📍 218 Halstead Ave · (555) 019-4477</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CREW -->
+    <section class="crew">
+      <div class="crew-inner">
+        <div class="section-center">
+          <div class="eyebrow">The Crew</div>
+          <h2>Pick your barber</h2>
+        </div>
+        <div class="crew-grid" id="crewGrid"></div>
+      </div>
+    </section>
+
+    <!-- GROUP BOOKINGS -->
+    <section class="group">
+      <div class="group-inner">
+        <div>
+          <div class="eyebrow" style="margin-bottom:16px;">Group Bookings</div>
+          <h2>Bring the whole crew</h2>
+          <p>Wedding party, birthday, a corporate crew, or just the boys getting fresh before a big night — we'll block out chairs, line up the barbers, and keep the drinks flowing. Four or more heads and we'll build the whole session around you.</p>
+          <div class="perks" id="perks"></div>
+          <button class="btn btn-red group-cta" data-nav="book">Enquire About a Group</button>
+        </div>
+        <div class="packages" id="packages"></div>
+      </div>
+    </section>
+
+    <!-- CTA BANNER -->
+    <section class="cta-banner">
+      <h2>Ready for a fresh cut?</h2>
+      <p>Book in 60 seconds. Get a text reminder before your slot.</p>
+      <button class="btn" data-nav="book">Book Now</button>
+    </section>
+  </main>
+
+  <!-- ===================== SERVICES ===================== -->
+  <main class="page-view hidden page" data-page="services">
+    <div class="page-head">
+      <div class="eyebrow">Services &amp; Pricing</div>
+      <h1>The Menu</h1>
+      <p>Prices are per service. Times are how long we'll hold your chair.</p>
+    </div>
+    <div class="svc-section">
+      <div class="section-label">Cuts &amp; Shaves</div>
+      <div id="serviceRows"></div>
+    </div>
+    <div class="addons-section">
+      <div class="section-label">Add-ons</div>
+      <p class="addons-intro">Stack any of these onto your cut — you'll get the option during booking.</p>
+      <div class="addons-grid" id="addonCards"></div>
+    </div>
+    <div class="center-cta">
+      <button class="btn btn-red" data-nav="book">Start Booking</button>
+    </div>
+  </main>
+
+  <!-- ===================== BOOKING ===================== -->
+  <main class="page-view hidden book" data-page="book" id="bookRoot"></main>
+
+  <!-- ===================== GALLERY ===================== -->
+  <main class="page-view hidden page page-wide" data-page="gallery">
+    <div class="page-head">
+      <div class="eyebrow">The Work</div>
+      <h1>Fresh Cuts</h1>
+      <p>Real cuts from real chairs. Drop your own photos into any tile — or link the shop's Instagram and let it fill itself.</p>
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+
+    <div class="insta">
+      <div>
+        <h3>Follow the chair</h3>
+        <p>Post every cut to <b>@johnsonsbarbers</b> and embed the feed here so this gallery updates itself — no re-uploading. New clients trust what they can see.</p>
+      </div>
+      <a href="https://instagram.com/johnsonsbarbers" target="_blank" rel="noopener">@johnsonsbarbers</a>
+    </div>
+
+    <div class="reviews-head">
+      <div class="eyebrow">Social Proof</div>
+      <h2>What people say</h2>
+      <div class="reviews-rating">
+        <span class="stars">★★★★★</span>
+        <span><b>4.9</b> · 312 Google reviews</span>
+      </div>
+    </div>
+    <div class="reviews-grid" id="reviewsGrid"></div>
+    <div class="widget-slot">
+      <div class="box">💡 Widget slot — embed your live Google Reviews here so new 5-stars appear automatically.</div>
+    </div>
+  </main>
+
+  <!-- ===================== FAQ & POLICIES ===================== -->
+  <main class="page-view hidden page page-narrow" data-page="faq">
+    <div class="page-head">
+      <div class="eyebrow">Good to Know</div>
+      <h1>Policies &amp; FAQ</h1>
+      <p>The house rules and the questions we get asked most. Short version: show up, we'll take care of the rest.</p>
+    </div>
+    <div class="policies-section">
+      <div class="kit-section-label">Shop Policies</div>
+      <div class="policies-grid" id="policiesGrid"></div>
+    </div>
+    <div class="faq-section">
+      <div class="kit-section-label">Frequently Asked</div>
+      <div class="faq-list" id="faqList"></div>
+    </div>
+    <div class="faq-cta">
+      <h3>Still got a question?</h3>
+      <p>Call the shop on (555) 019-4477 or just book and ask in the chair.</p>
+      <button class="btn btn-red" data-nav="book">Book an Appointment</button>
+    </div>
+  </main>
+
+  <!-- ===================== OWNER KIT ===================== -->
+  <main class="page-view hidden page" data-page="kit" style="max-width:940px;">
+    <div class="kit-head">
+      <div>
+        <div class="eyebrow">For the Owner</div>
+        <h1>Launch Kit</h1>
+      </div>
+      <button class="btn btn-red print-btn no-print" id="printKit">🖨 Print One-Pager</button>
+    </div>
+    <p class="kit-intro">Everything the shop needs to get this site live and keep the chair full. Print it, tape it to the mirror, tick the boxes.</p>
+    <div class="kit-section-label">Go-Live Checklist · 5 Steps</div>
+    <div class="checklist" id="checklist"></div>
+    <div class="kit-section-2">
+      <div class="kit-section-label">High-Value Features · How to set each up</div>
+      <div class="features-grid" id="featuresGrid"></div>
+    </div>
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="no-print site-footer">
+    <div class="footer-inner">
+      <div>
+        <div class="footer-name">Johnson's Barbers</div>
+        <div class="footer-addr">218 Halstead Ave · (555) 019-4477 · @johnsonsbarbers</div>
+      </div>
+      <div class="footer-nav">
+        <button class="footer-link" data-nav="home">Home</button>
+        <button class="footer-link" data-nav="services">Services</button>
+        <button class="footer-link" data-nav="gallery">Gallery</button>
+        <button class="footer-link" data-nav="faq">FAQ</button>
+        <button class="footer-link" data-nav="kit">Owner Kit</button>
+      </div>
+    </div>
+  </footer>
+
+</div>
+<script src="js/app.js"></script>
+</body>
+</html>
