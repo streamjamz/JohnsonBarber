@@ -16,6 +16,7 @@ const FIELDS = [
   { key: 'shop_instagram', label: 'Instagram handle' },
   { key: 'reviews_rating', label: 'Reviews rating' },
   { key: 'reviews_count', label: 'Reviews count' },
+  { key: 'closed_days', label: 'Closed weekdays (0=Sun … 6=Sat, comma-separated)' },
 ];
 
 export default async function ContentAdminPage() {

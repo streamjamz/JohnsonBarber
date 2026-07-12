@@ -1,13 +1,26 @@
 import './globals.css';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import PWARegister from '@/components/PWARegister';
 import { getContent } from '@/lib/content';
 
 export const metadata = {
   title: "Johnson's Barbers — Sharp cuts. Straight talk.",
   description:
     'Precision fades, classic scissor work, and hot-towel shaves. Book your barber online in 60 seconds at Johnson\'s Barbers.',
-  icons: { icon: '/favicon.svg' },
+  applicationName: "Johnson's Barbers",
+  appleWebApp: { capable: true, statusBarStyle: 'black-translucent', title: "Johnson's Barbers" },
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/icons/icon-180.png',
+  },
+};
+
+export const viewport = {
+  themeColor: '#0f0f11',
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
 };
 
 // Set the theme before paint to avoid a flash of the wrong theme.
@@ -26,6 +39,7 @@ export default async function RootLayout({ children }) {
           href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@600;700&display=swap"
           rel="stylesheet"
         />
+        <link rel="manifest" href="/manifest.webmanifest" />
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
@@ -34,6 +48,7 @@ export default async function RootLayout({ children }) {
           {children}
           <Footer content={content} />
         </div>
+        <PWARegister />
       </body>
     </html>
   );

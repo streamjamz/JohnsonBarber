@@ -111,7 +111,25 @@ Visit `/` for the site and `/admin` to log in.
   without deleting.
 - **Change prices / services:** `/admin/services`.
 - **Edit the homepage words, hours, Instagram, address:** `/admin/content`.
+- **Change which days the shop is closed:** `/admin/content` → "Closed weekdays"
+  (0=Sun … 6=Sat, comma-separated). Default `0` = closed Sundays. Closed days
+  are greyed out in the booking calendar.
 - **See upcoming bookings / cancel:** `/admin`.
+
+## Booking calendar & double-booking
+
+The date step is a month **calendar** — past days and closed weekdays are
+disabled. Once a day is picked, any time slots already taken **for that barber
+on that day** show crossed-out and can't be selected (via `/api/availability`),
+so two people can't grab the same slot.
+
+## Install as a phone/desktop app (PWA)
+
+The site is installable. On a phone, open it in the browser and choose **"Add
+to Home Screen"** (iOS Safari: Share → Add to Home Screen; Android Chrome: menu
+→ Install app). It then opens full-screen like a native app with the Johnson's
+icon. This works automatically once deployed over HTTPS (Vercel gives you
+HTTPS) — no extra setup.
 
 ---
 

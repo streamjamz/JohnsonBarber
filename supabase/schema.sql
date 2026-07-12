@@ -224,10 +224,9 @@ insert into barbers (id, name, first_name, role, specialty, initial, active, sor
   ('subby',   $$Subby$$,       $$Subby$$,  $$Barber$$,                $$Beard sculpting, designs & line work$$, $$S$$, true, 3);
 
 insert into hours (day, time, closed, sort_order) values
-  ($$Mon$$,       $$Closed$$,     true,  1),
-  ($$Tue – Fri$$, $$9am – 7pm$$,  false, 2),
-  ($$Saturday$$,  $$8am – 5pm$$,  false, 3),
-  ($$Sunday$$,    $$10am – 3pm$$, false, 4);
+  ($$Mon – Fri$$, $$9am – 7pm$$, false, 1),
+  ($$Saturday$$,  $$8am – 5pm$$, false, 2),
+  ($$Sunday$$,    $$Closed$$,    true,  3);
 
 insert into reviews (text, name, initial, when_text, sort_order) values
   ($$Best fade in the city, hands down. Miguel remembers exactly how I like it every single time.$$, $$Darnell W.$$, $$D$$, $$2 weeks ago$$, 1),
@@ -303,4 +302,5 @@ insert into content (key, value) values
   ($$shop_phone$$, $$(555) 019-4477$$),
   ($$shop_instagram$$, $$@johnsonsbarbers$$),
   ($$reviews_rating$$, $$4.9$$),
-  ($$reviews_count$$, $$312$$);
+  ($$reviews_count$$, $$312$$),
+  ($$closed_days$$, $$0$$);

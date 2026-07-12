@@ -1,30 +1,27 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import CalendarPicker from '@/components/CalendarPicker';
 
 const STEP_META = [
   { label: 'Barber',  title: "Who's cutting today?", sub: 'Pick your barber — or the first one free.' },
   { label: 'Service', title: 'What are we doing?',   sub: 'Choose your cut. You can add extras next.' },
   { label: 'Add-ons', title: 'Anything extra?',      sub: 'Optional — skip it if you just want the cut.' },
-  { label: 'Date',    title: 'When suits you?',       sub: 'Pick a day and a time that’s open.' },
+  { label: 'Date',    title: 'When suits you?',       sub: 'Pick a day, then a time that’s free.' },
   { label: 'Pay',     title: 'Lock it in',           sub: 'Your details and how you’d like to pay.' },
 ];
 const TIMES = ['9:00', '9:45', '10:30', '11:15', '1:00', '1:45', '3:00', '4:30'];
+const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-function computeDays() {
-  const out = [];
-  const dow = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const mon = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  let d = new Date();
-  while (out.length < 6) {
-    d = new Date(d.getTime() + 86400000);
-    if (d.getDay() === 1) continue; // Mon closed
-    out.push({ id: d.toISOString().slice(0, 10), dow: dow[d.getDay()], date: String(d.getDate()), mon: mon[d.getMonth()] });
-  }
-  return out;
+function formatDay(id) {
+  if (!id) return null;
+  const [y, m, d] = id.split('-').map(Number);
+  const date = new Date(y, m - 1, d);
+  return { dow: DOW[date.getDay()], mon: MON[m - 1], date: String(d), label: `${DOW[date.getDay()]} ${MON[m - 1]} ${d}` };
 }
 
-export default function Booking({ barbers, services, addons, initialBarber, initialService, initialStep }) {
+export default function Booking({ barbers, services, addons, initialBarber, initialService, initialStep, closedDays = [0] }) {
   const [step, setStep] = useState(initialStep || 0);
   const [barber, setBarber] = useState(initialBarber || null);
   const [service, setService] = useState(initialService || null);
@@ -33,18 +30,37 @@ export default function Booking({ barbers, services, addons, initialBarber, init
   const [time, setTime] = useState(null);
   const [pay, setPay] = useState(null);
   const [customer, setCustomer] = useState({ name: '', phone: '', email: '' });
-  const [days, setDays] = useState([]);
+  const [bookedTimes, setBookedTimes] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
-
-  useEffect(() => { setDays(computeDays()); }, []);
 
   const serviceObj = useMemo(() => services.find((s) => s.id === service) || null, [services, service]);
   const barberObj = useMemo(() => barbers.find((b) => b.id === barber) || null, [barbers, barber]);
   const addonObjs = useMemo(() => addons.filter((a) => addonIds.includes(a.id)), [addons, addonIds]);
   const total = useMemo(() => (serviceObj ? serviceObj.price : 0) + addonObjs.reduce((t, a) => t + a.price, 0), [serviceObj, addonObjs]);
   const deposit = Math.max(10, Math.round(total * 0.3));
-  const dayObj = days.find((d) => d.id === day);
+  const dayLabel = formatDay(day);
+
+  // Fetch already-booked slots whenever the chosen barber/day changes.
+  useEffect(() => {
+    let cancelled = false;
+    if (!day) { setBookedTimes([]); return; }
+    setLoadingSlots(true);
+    const params = new URLSearchParams({ day });
+    if (barber) params.set('barberId', barber);
+    fetch(`/api/availability?${params.toString()}`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (cancelled) return;
+        const booked = json.booked || [];
+        setBookedTimes(booked);
+        setTime((t) => (t && booked.includes(t) ? null : t)); // drop a now-taken slot
+      })
+      .catch(() => { if (!cancelled) setBookedTimes([]); })
+      .finally(() => { if (!cancelled) setLoadingSlots(false); });
+    return () => { cancelled = true; };
+  }, [barber, day]);
 
   const contactOk = customer.name.trim() && /.+@.+\..+/.test(customer.email);
 
@@ -56,9 +72,9 @@ export default function Booking({ barbers, services, addons, initialBarber, init
     return true;
   }
 
-  async function next() {
+  function next() {
     if (!canNext()) return;
-    if (step === 4) return confirm();
+    if (step === 4) return confirmBooking();
     setStep((s) => Math.min(5, s + 1));
     window.scrollTo(0, 0);
   }
@@ -66,12 +82,13 @@ export default function Booking({ barbers, services, addons, initialBarber, init
   function reset() {
     setStep(0); setBarber(null); setService(null); setAddonIds([]);
     setDay(null); setTime(null); setPay(null); setCustomer({ name: '', phone: '', email: '' });
-    setError(null); window.scrollTo(0, 0);
+    setBookedTimes([]); setError(null); window.scrollTo(0, 0);
   }
+  function pickDay(id) { setDay(id); setTime(null); }
 
   const amountPaid = pay === 'deposit' ? deposit : pay === 'full' ? total : 0;
 
-  async function confirm() {
+  async function confirmBooking() {
     setSubmitting(true);
     setError(null);
     try {
@@ -79,16 +96,9 @@ export default function Booking({ barbers, services, addons, initialBarber, init
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          barberId: barber,
-          serviceId: service,
-          addonIds,
-          day,
-          time,
-          payType: pay,
-          amount: total,
-          amountPaid,
-          customer,
-          when: dayObj ? `${dayObj.dow} ${dayObj.mon} ${dayObj.date}, ${time}` : `${day}, ${time}`,
+          barberId: barber, serviceId: service, addonIds, day, time,
+          payType: pay, amount: total, amountPaid, customer,
+          when: dayLabel ? `${dayLabel.label}, ${time}` : `${day}, ${time}`,
         }),
       });
       const json = await res.json().catch(() => ({}));
@@ -106,7 +116,7 @@ export default function Booking({ barbers, services, addons, initialBarber, init
   if (barberObj) summaryLines.push(['Barber', barberObj.name]);
   if (serviceObj) summaryLines.push(['Service', serviceObj.name]);
   if (addonObjs.length) summaryLines.push(['Add-ons', addonObjs.map((a) => a.name).join(', ')]);
-  if (dayObj && time) summaryLines.push(['When', `${dayObj.dow} ${dayObj.mon} ${dayObj.date}, ${time}`]);
+  if (dayLabel && time) summaryLines.push(['When', `${dayLabel.label}, ${time}`]);
 
   return (
     <>
@@ -201,25 +211,34 @@ export default function Booking({ barbers, services, addons, initialBarber, init
         </>
       )}
 
-      {/* STEP 3 — WHEN */}
+      {/* STEP 3 — WHEN (calendar + times with booked slots greyed out) */}
       {step === 3 && (
         <>
           <div className="when-label">Pick a day</div>
-          <div className="day-grid">
-            {days.map((d) => (
-              <div className={'day-cell' + (day === d.id ? ' selected' : '')} key={d.id} onClick={() => setDay(d.id)}>
-                <div className="day-dow">{d.dow}</div>
-                <div className="day-date">{d.date}</div>
-                <div className="day-mon">{d.mon}</div>
-              </div>
-            ))}
-          </div>
+          <CalendarPicker value={day} onChange={pickDay} closedDays={closedDays} />
           <div className="when-label second">Pick a time</div>
-          <div className="time-grid">
-            {TIMES.map((t) => (
-              <div className={'time-cell' + (time === t ? ' selected' : '')} key={t} onClick={() => setTime(t)}>{t}</div>
-            ))}
-          </div>
+          {!day && <div className="slots-loading">Choose a day first.</div>}
+          {day && loadingSlots && <div className="slots-loading">Checking what’s free…</div>}
+          {day && !loadingSlots && (
+            <>
+              <div className="time-grid">
+                {TIMES.map((t) => {
+                  const booked = bookedTimes.includes(t);
+                  return (
+                    <div
+                      key={t}
+                      className={'time-cell' + (time === t ? ' selected' : '') + (booked ? ' booked' : '')}
+                      onClick={() => { if (!booked) setTime(t); }}
+                      title={booked ? 'Already booked' : undefined}
+                    >
+                      {t}
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="slot-note">Crossed-out times are already booked{barberObj ? ` with ${barberObj.name}` : ''}.</p>
+            </>
+          )}
         </>
       )}
 
